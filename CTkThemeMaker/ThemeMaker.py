@@ -163,6 +163,11 @@ class App(customtkinter.CTk):
                     "hover_color": ["gray75", "gray28"],
                     "text_color": ["gray10", "gray90"]
                   },
+                  "CTkTable": {
+                    "colors": ["gray90", "gray20"],
+                    "header_color": ["gray10", "gray90"],
+                    "hover_color": ["gray75", "gray28"]
+                  },
                   "CTkFont": {
                     "macOS": {
                       "family": "SF Display",
@@ -208,7 +213,8 @@ class App(customtkinter.CTk):
              'CTkSegmentedButton':["fg_color", "selected_color", "selected_hover_color", "unselected_color",
                                    "unselected_hover_color", "text_color", "text_color_disabled"],
              'CTkScrollableFrame':["label_fg_color"],
-             'DropdownMenu':["fg_color", "hover_color", "text_color"]}
+             'DropdownMenu':["fg_color", "hover_color", "text_color"],
+             'CTkTable':["colors", "header_color", "hover_color"]}
 
     widgetlist = [key for key in widgets] 
     current = widgetlist[0]
@@ -270,22 +276,22 @@ class App(customtkinter.CTk):
         self.palette = customtkinter.CTkButton(master=self, height=40, width=110, text="Color Palette", command=self.show_colors)
         self.palette.grid(row=4, column=0, columnspan=3, sticky="nswe", padx=(20,5), pady=(0,20))
 
-        self.quick_test = customtkinter.CTkButton(master=self, height=40, width=110, text="QUICK TEST", command=self.test)
+        self.quick_test = customtkinter.CTkButton(master=self, height=40, width=110, text="Quick Test", command=self.test)
         self.quick_test.grid(row=4, column=3, columnspan=3, sticky="nswe", padx=(5,20), pady=(0,20))
 
         
-        self.update(None)
+        self.update()
 
     #--------------------App Functions--------------------#
 
     def change_mode_right(self):
-        """ changing current widget type wih right button """
+        # Changing current widget type wih right button
         self.widgetlist.append(self.widgetlist.pop(0))
         self.current = self.widgetlist[0]
         self.widget_type.configure(text=self.current)
         self.menu.configure(values=self.widgets[self.current])
         self.menu.set(self.widgets[self.current][0])
-        self.update(self.menu.get())
+        self.update()
          
     def change_mode_left(self):
         """ changing current widget type with left button  """
@@ -294,10 +300,10 @@ class App(customtkinter.CTk):
         self.widget_type.configure(text=self.current)
         self.menu.configure(values=self.widgets[self.current])
         self.menu.set(self.widgets[self.current][0])
-        self.update(self.menu.get())
+        self.update()
 
-    def update(self, value):
-        """ updating the widgets and their colors """
+    def update(self):
+        # Updating the widgets and their colors
         for i in self.json_data[self.current]:
             if i==self.menu.get():
                 if (self.json_data[self.current][i])[0]!="transparent":
@@ -310,7 +316,7 @@ class App(customtkinter.CTk):
                     self.button_dark.configure(fg_color="transparent")
                     
     def change_color_light(self):
-        """ choosing the color for Light mode of the theme """
+        # Choosing the color for Light mode of the theme
         default = self.button_light._apply_appearance_mode(self.button_light._fg_color)
         if default=="transparent":
             default = "white"
@@ -323,7 +329,7 @@ class App(customtkinter.CTk):
                     (self.json_data[self.current][i])[0] = color1[1]
                
     def change_color_dark(self):
-        """ choosing the color for Dark mode of the theme """
+        # Choosing the color for Dark mode of the theme
         default = self.button_dark._apply_appearance_mode(self.button_dark._fg_color)
         if default=="transparent":
             default = "white"      
@@ -336,7 +342,7 @@ class App(customtkinter.CTk):
                     (self.json_data[self.current][i])[1] = color2[1]
       
     def save(self):
-        """ exporting the theme file """
+        # Exporting the theme file
         save_file = tkinter.filedialog.asksaveasfilename(initialfile="Untitled.json", defaultextension=".json",
                                                          filetypes=[('json', ['*.json']),('All Files', '*.*')])
         try:
@@ -354,7 +360,7 @@ class App(customtkinter.CTk):
             tkinter.messagebox.showerror("Error!","Something went wrong!")
                        
     def load(self):
-        """ load any theme file """
+        # Load any theme file
         global json_data
         open_json = tkinter.filedialog.askopenfilename(filetypes=[('json', ['*.json']),('All Files', '*.*')])
         try:
@@ -372,7 +378,7 @@ class App(customtkinter.CTk):
             tkinter.messagebox.showerror("Error!","Unable to load this theme file!")
         
     def reset(self):
-        """ resetting the current colors of the widget to null (default value) """
+        # Resetting the current colors of the widget to null (default value)
         for i in self.json_data[self.current]:
             if i==self.menu.get():
                 self.json_data[self.current][i][0] = "transparent"
@@ -381,7 +387,7 @@ class App(customtkinter.CTk):
                 self.button_dark.configure(fg_color="transparent")
 
     def test(self):
-        """ function for quickly testing the theme """
+        # Function for quickly testing the theme
         DIRPATH = os.path.dirname(os.path.abspath(__file__))
         
         program = os.path.join(DIRPATH, "CTkExample.py")
@@ -405,7 +411,7 @@ class App(customtkinter.CTk):
             subprocess.run(["python3", program])
             
     def replace_color(self, color, button, mode):
-        """ replace a specific color """      
+        # Replace a specific color
         if color=="transparent":
             default = "white"
         else:
@@ -431,12 +437,14 @@ class App(customtkinter.CTk):
         self.update(self.menu.get())
             
     def show_colors(self):
-        """ show the color palette for the theme """
+        # Show the color palette for the theme
         toplevel = customtkinter.CTkToplevel()
         toplevel.resizable(True, True)
         toplevel.geometry("500x700")
         toplevel.title("Color Palette")
         toplevel.transient(self)
+        toplevel.update()
+        toplevel.deiconify()
         toplevel.grab_set()
         
         frame_light = customtkinter.CTkScrollableFrame(toplevel, label_text="Light Colors")
@@ -465,7 +473,7 @@ class App(customtkinter.CTk):
             button.pack(fill="x", expand=True, padx=10, pady=5)
              
     def on_closing(self):
-        """ close the program """
+        # Close the program
         quit_ = tkinter.messagebox.askokcancel(title="Exit?", message= "Do you want to exit?")
         if quit_:
             self.destroy()
