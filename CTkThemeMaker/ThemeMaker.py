@@ -1,6 +1,8 @@
 import tkinter
 import customtkinter
 from tkinter.colorchooser import askcolor
+from CTkMessagebox import *
+from CTkColorPicker import *
 import json
 import os
 import subprocess
@@ -320,8 +322,7 @@ class App(customtkinter.CTk):
         default = self.button_light._apply_appearance_mode(self.button_light._fg_color)
         if default=="transparent":
             default = "white"
-        color1 = askcolor(title="Choose color for "+self.menu.get()+" (Light)",
-                          initialcolor=default)
+        color1 = askcolor(title=f"Choose color for {self.menu.get()} (Light)", initialcolor=default)
         if color1[1] is not None:
             self.button_light.configure(fg_color=color1[1])
             for i in self.json_data[self.current]:
@@ -333,8 +334,7 @@ class App(customtkinter.CTk):
         default = self.button_dark._apply_appearance_mode(self.button_dark._fg_color)
         if default=="transparent":
             default = "white"      
-        color2 = askcolor(title="Choose color for "+self.menu.get()+" (Dark)",
-                          initialcolor=default)
+        color2 = askcolor(title=f"Choose color for {self.menu.get()} (Dark)", initialcolor=default)
         if color2[1] is not None:
             self.button_dark.configure(fg_color=color2[1])
             for i in self.json_data[self.current]:
@@ -343,8 +343,7 @@ class App(customtkinter.CTk):
       
     def save(self):
         # Exporting the theme file
-        save_file = tkinter.filedialog.asksaveasfilename(initialfile="Untitled.json", defaultextension=".json",
-                                                         filetypes=[('json', ['*.json']),('All Files', '*.*')])
+        save_file = tkinter.filedialog.asksaveasfilename(initialfile="Untitled.json", defaultextension=".json", filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
         try:
             export_data = copy.deepcopy(self.json_data)
             for i in export_data:
@@ -362,7 +361,7 @@ class App(customtkinter.CTk):
     def load(self):
         # Load any theme file
         global json_data
-        open_json = tkinter.filedialog.askopenfilename(filetypes=[('json', ['*.json']),('All Files', '*.*')])
+        open_json = tkinter.filedialog.askopenfilename(filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
         try:
             if open_json:
                 with open(open_json) as f:
@@ -375,7 +374,7 @@ class App(customtkinter.CTk):
                         
             self.update(self.menu.get())
         except:
-            tkinter.messagebox.showerror("Error!","Unable to load this theme file!")
+            tkinter.messagebox.showerror("Error!", "Unable to load this theme file!")
         
     def reset(self):
         # Resetting the current colors of the widget to null (default value)
