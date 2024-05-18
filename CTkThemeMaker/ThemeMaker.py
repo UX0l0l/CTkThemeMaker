@@ -2,11 +2,10 @@ from tkinter import filedialog
 from customtkinter import *
 from tkinter.colorchooser import askcolor
 from CTkMessagebox import CTkMessagebox
-from CTkColorPicker import *
+#from CTkColorPicker import *
 import json
 import os
 import subprocess
-import sys
 import copy
 
 """
@@ -397,16 +396,9 @@ class App(CTk):
         export_data = copy.deepcopy(self.json_data)
         for i in export_data:
             for j in export_data[i]:
-                if export_data[i][j]==["transparent", "transparent"]:
+                if export_data[i][j] == ["transparent", "transparent"]:
                     export_data[i][j] = "transparent"
-
-        with open(os.path.join(DIRPATH, "CTkTheme_test.json"), "w") as f:
-            json.dump(export_data, f, indent=2)
-        
-        if sys.platform.startswith("win"):   
-            subprocess.run(["python", program])
-        else:
-            subprocess.run(["python3", program])
+        subprocess.run(["python" if os.name == "nt" else "python3", program])
             
     def replace_color(self, color, button, mode):
         # Replace a specific color
