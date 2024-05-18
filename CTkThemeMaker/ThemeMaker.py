@@ -1,5 +1,5 @@
 import tkinter
-import customtkinter
+from customtkinter import *
 from tkinter.colorchooser import askcolor
 from CTkMessagebox import *
 from CTkColorPicker import *
@@ -16,7 +16,7 @@ Quick Guide:
 This program can be used to create custom themes for customtkinter.
 You can easily create and edit themes for your applications.
 Customtkinter themefiles are .json files that can be used with customtkinter using the 'set_default_color_theme' method.
-Example: customtkinter.set_default_color_theme("Path//my_theme.json")
+Example: set_default_color_theme("Path//my_theme.json")
 A customtkinter theme has one dark and one light color attribute for each widget type and you have to choose the 2 colors for each widget type.
 (You can switch between them with the 'set_appearance_mode' method)
 Currently it is not possible to switch themes, so only appearance_mode can be changed.
@@ -24,7 +24,7 @@ Default reset color is "transparent" which has no color, means it take the color
 (transparent is not supported in all widgets)
 """
 
-class App(customtkinter.CTk):
+class App(CTk):
     
     #--------------------Main Structure of the Theme File--------------------#
     
@@ -229,56 +229,56 @@ class App(customtkinter.CTk):
     def __init__(self):
         
         #--------------------Main root Window--------------------#
-        super().__init__(fg_color=customtkinter.ThemeManager.theme["CTkFrame"]["top_fg_color"])
-        customtkinter.set_default_color_theme("blue")
+        super().__init__(fg_color=ThemeManager.theme["CTkFrame"]["top_fg_color"])
+        set_default_color_theme("blue")
         self.title("CustomTkinter ThemeMaker")
         self.geometry("500x450")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.grid_columnconfigure((0,1,2,3,4,5), weight=1)
         self.grid_rowconfigure(2, weight=1)
         
-        self.frame_info = customtkinter.CTkFrame(master=self, height=80)
+        self.frame_info = CTkFrame(master=self, height=80)
         self.frame_info.grid(row=0, column=0, columnspan=6, sticky="nswe", padx=20, pady=20)
         self.frame_info.grid_columnconfigure(0, weight=1)
 
-        self.widget_type = customtkinter.CTkLabel(master=self.frame_info, text=self.current, corner_radius=10, width=200, height=20,
+        self.widget_type = CTkLabel(master=self.frame_info, text=self.current, corner_radius=10, width=200, height=20,
                                         fg_color=("white", "gray38"))
         self.widget_type.grid(row=0, column=0, sticky="nswe", padx=80, pady=20)
 
-        self.left_button = customtkinter.CTkButton(master=self.frame_info, text="<", width=20, height=20, corner_radius=10,
+        self.left_button = CTkButton(master=self.frame_info, text="<", width=20, height=20, corner_radius=10,
                                         fg_color=("white", "gray38"), command=self.change_mode_left, text_color=("black","white"))
         self.left_button.grid(row=0, column=0, sticky="nsw", padx=20, pady=20)
 
-        self.right_button = customtkinter.CTkButton(master=self.frame_info, text=">", width=20, height=20, corner_radius=10,
+        self.right_button = CTkButton(master=self.frame_info, text=">", width=20, height=20, corner_radius=10,
                                         fg_color=("white", "gray38"), command=self.change_mode_right, text_color=("black","white"))
         self.right_button.grid(row=0, column=0, sticky="nse", padx=20, pady=20)
 
-        self.menu = customtkinter.CTkOptionMenu(master=self, fg_color=("white", "gray38"), button_color=("white", "gray38"), text_color=("black","white"),
+        self.menu = CTkOptionMenu(master=self, fg_color=("white", "gray38"), button_color=("white", "gray38"), text_color=("black","white"),
                                          height=30, values=list(self.widgets.items())[0][1], command=self.update)   
         self.menu.grid(row=1, column=0, columnspan=6, sticky="nswe", padx=20)
 
-        self.button_light = customtkinter.CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white",
+        self.button_light = CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white",
                                          text_color="grey50", border_width=2, text="Light", hover=False, command=self.change_color_light)
         self.button_light.grid(row=2, column=0, sticky="nswe", columnspan=3, padx=(20,5), pady=20)
     
-        self.button_dark = customtkinter.CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white",
+        self.button_dark = CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white",
                                          text_color="gray80", border_width=2, text="Dark", hover=False,
                                          command=self.change_color_dark)
         self.button_dark.grid(row=2, column=3, sticky="nswe", columnspan=3, padx=(5,20), pady=20)
 
-        self.button_load = customtkinter.CTkButton(master=self, height=40, width=110, text="Load Theme", command=self.load)
+        self.button_load = CTkButton(master=self, height=40, width=110, text="Load Theme", command=self.load)
         self.button_load.grid(row=3, column=0,  columnspan=2, sticky="nswe", padx=(20,5), pady=(0,20))
 
-        self.button_export = customtkinter.CTkButton(master=self, height=40, width=110, text="Save Theme", command=self.save)
+        self.button_export = CTkButton(master=self, height=40, width=110, text="Save Theme", command=self.save)
         self.button_export.grid(row=3, column=2,  columnspan=2, sticky="nswe", padx=(5,5), pady=(0,20))
     
-        self.button_reset = customtkinter.CTkButton(master=self, height=40, width=110, text="Reset", command=self.reset)
+        self.button_reset = CTkButton(master=self, height=40, width=110, text="Reset", command=self.reset)
         self.button_reset.grid(row=3, column=4,  columnspan=2, sticky="nswe", padx=(5,20), pady=(0,20))
         
-        self.palette = customtkinter.CTkButton(master=self, height=40, width=110, text="Color Palette", command=self.show_colors)
+        self.palette = CTkButton(master=self, height=40, width=110, text="Color Palette", command=self.show_colors)
         self.palette.grid(row=4, column=0, columnspan=3, sticky="nswe", padx=(20,5), pady=(0,20))
 
-        self.quick_test = customtkinter.CTkButton(master=self, height=40, width=110, text="Quick Test", command=self.test)
+        self.quick_test = CTkButton(master=self, height=40, width=110, text="Quick Test", command=self.test)
         self.quick_test.grid(row=4, column=3, columnspan=3, sticky="nswe", padx=(5,20), pady=(0,20))
 
         
@@ -436,7 +436,7 @@ class App(customtkinter.CTk):
             
     def show_colors(self):
         # Show the color palette for the theme
-        toplevel = customtkinter.CTkToplevel()
+        toplevel = CTkToplevel()
         toplevel.resizable(True, True)
         toplevel.geometry("500x700")
         toplevel.title("Color Palette")
@@ -445,10 +445,10 @@ class App(customtkinter.CTk):
         toplevel.deiconify()
         toplevel.grab_set()
         
-        frame_light = customtkinter.CTkScrollableFrame(toplevel, label_text="Light Colors")
+        frame_light = CTkScrollableFrame(toplevel, label_text="Light Colors")
         frame_light.pack(fill="both", expand=True, side="left", padx=(10,5), pady=10)
         
-        frame_dark = customtkinter.CTkScrollableFrame(toplevel, label_text="Dark Colors")
+        frame_dark = CTkScrollableFrame(toplevel, label_text="Dark Colors")
         frame_dark.pack(fill="both", expand=True, side="right", padx=(5,10), pady=10)
 
         set_dark = set()
@@ -461,12 +461,12 @@ class App(customtkinter.CTk):
                     set_light.add(self.json_data[i][j][0])
                     
         for color in set_dark:
-            button = customtkinter.CTkButton(frame_dark, text=color, fg_color=color, hover=False)
+            button = CTkButton(frame_dark, text=color, fg_color=color, hover=False)
             button.configure(command=lambda x=color, y=button: self.replace_color(x, y, 1))
             button.pack(fill="x", expand=True, padx=10, pady=5)
             
         for color in set_light:
-            button = customtkinter.CTkButton(frame_light, text=color, fg_color=color, hover=False)
+            button = CTkButton(frame_light, text=color, fg_color=color, hover=False)
             button.configure(command=lambda x=color, y=button: self.replace_color(x, y, 0))         
             button.pack(fill="x", expand=True, padx=10, pady=5)
              
