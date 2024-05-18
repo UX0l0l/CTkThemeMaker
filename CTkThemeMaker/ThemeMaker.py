@@ -430,8 +430,10 @@ class App(CTk):
                     if type(self.json_data[i][j]) is list:
                         if self.json_data[i][j][0]==color:
                             self.json_data[i][j][0] = new_color
-        try: button.configure(text=new_color, fg_color=new_color)
-        except: pass
+        try:
+            button.configure(text=new_color, fg_color=new_color)
+        except Exception as e:
+            print(e)
         self.update()
             
     def show_colors(self):
