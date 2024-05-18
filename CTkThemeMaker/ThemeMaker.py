@@ -1,4 +1,4 @@
-import tkinter
+from tkinter import filedialog
 from customtkinter import *
 from tkinter.colorchooser import askcolor
 from CTkMessagebox import *
@@ -343,7 +343,7 @@ class App(CTk):
       
     def save(self):
         # Exporting the theme file
-        save_file = tkinter.filedialog.asksaveasfilename(initialfile="Untitled.json", defaultextension=".json", filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
+        save_file = filedialog.asksaveasfilename(initialfile="Untitled.json", defaultextension=".json", filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
         try:
             export_data = copy.deepcopy(self.json_data)
             for i in export_data:
@@ -360,7 +360,7 @@ class App(CTk):
                        
     def load(self):
         # Load any theme file
-        open_json = tkinter.filedialog.askopenfilename(filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
+        open_json = filedialog.askopenfilename(filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
         try:
             if open_json:
                 with open(open_json) as f:
