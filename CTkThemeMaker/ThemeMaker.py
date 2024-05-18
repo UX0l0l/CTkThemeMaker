@@ -354,13 +354,12 @@ class App(customtkinter.CTk):
                 with open(save_file, "w") as f:
                     json.dump(export_data, f, indent=2)
                     f.close()
-                tkinter.messagebox.showinfo("Exported!","Theme saved successfully!")
-        except:
-            tkinter.messagebox.showerror("Error!","Something went wrong!")
+                CTkMessagebox("Exported!", "Theme saved successfully!")
+        except Exception as e:
+            CTkMessagebox("Error!", f"Something went wrong! {e}", icon="cancel")
                        
     def load(self):
         # Load any theme file
-        global json_data
         open_json = tkinter.filedialog.askopenfilename(filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
         try:
             if open_json:
@@ -372,9 +371,9 @@ class App(customtkinter.CTk):
                     if value=="transparent":
                         self.json_data[i][key] = ["transparent", "transparent"]
                         
-            self.update(self.menu.get())
-        except:
-            tkinter.messagebox.showerror("Error!", "Unable to load this theme file!")
+            self.update()
+        except Exception as e:
+            CTkMessagebox("Error!", f"Unable to load this theme file! {e}", icon="cancel")
         
     def reset(self):
         # Resetting the current colors of the widget to null (default value)
@@ -392,7 +391,7 @@ class App(customtkinter.CTk):
         program = os.path.join(DIRPATH, "CTkExample.py")
         
         if not os.path.exists(program):
-            tkinter.messagebox.showerror("Sorry!","Cannot test the theme, example program is missing!")
+            CTkMessagebox("Sorry!","Cannot test the theme, example program is missing!", icon="cancel")
             return
         
         export_data = copy.deepcopy(self.json_data)
@@ -433,7 +432,7 @@ class App(customtkinter.CTk):
                             self.json_data[i][j][0] = new_color
         try: button.configure(text=new_color, fg_color=new_color)
         except: pass
-        self.update(self.menu.get())
+        self.update()
             
     def show_colors(self):
         # Show the color palette for the theme
@@ -473,8 +472,8 @@ class App(customtkinter.CTk):
              
     def on_closing(self):
         # Close the program
-        quit_ = tkinter.messagebox.askokcancel(title="Exit?", message= "Do you want to exit?")
-        if quit_:
+        quit = CTkMessagebox(title="Exit?", message= "Do you want to exit?", icon="question", option_1="No", option_2="Yes")
+        if quit.get() == "Yes":
             self.destroy()
             
 if __name__ == "__main__":
