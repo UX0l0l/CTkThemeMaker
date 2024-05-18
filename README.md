@@ -3,7 +3,7 @@ A quick and easy theme builder for customtkinter!
 
 ## To-do list
 
-- [x] Add support for CTkTable
+- [ ] Add support for CTkTable
 - [x] Fix color palette button
 - [ ] Add support for other widgets (not sure which ones yet)
 - [ ] Replace default tkinter askcolor with CTkColorPicker
