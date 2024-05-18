@@ -1,7 +1,7 @@
 from tkinter import filedialog
 from customtkinter import *
 from tkinter.colorchooser import askcolor
-from CTkMessagebox import *
+from CTkMessagebox import CTkMessagebox
 from CTkColorPicker import *
 import json
 import os
