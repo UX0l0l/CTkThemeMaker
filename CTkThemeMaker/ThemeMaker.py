@@ -392,12 +392,15 @@ class App(CTk):
         if not os.path.exists(program):
             CTkMessagebox("Sorry!","Cannot test the theme, example program is missing!", icon="cancel")
             return
-        
+
         export_data = copy.deepcopy(self.json_data)
         for i in export_data:
             for j in export_data[i]:
                 if export_data[i][j] == ["transparent", "transparent"]:
                     export_data[i][j] = "transparent"
+
+        with open(os.path.join(DIRPATH, "CTkTheme_test.json"), "w") as f:
+            json.dump(export_data, f, indent=2)
         subprocess.run(["python" if os.name == "nt" else "python3", program])
             
     def replace_color(self, color, button, mode):
