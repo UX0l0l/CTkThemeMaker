@@ -303,7 +303,7 @@ class App(CTk):
         self.menu.set(self.widgets[self.current][0])
         self.update()
 
-    def update(self):
+    def update(self, event=None):
         # Updating the widgets and their colors
         for i in self.json_data[self.current]:
             if i==self.menu.get():
