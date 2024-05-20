@@ -6,7 +6,7 @@ A quick and easy theme builder for customtkinter!
 - [ ] Add support for CTkTable
 - [x] Fix color palette button
 - [ ] Add support for other widgets (not sure which ones yet)
-- [ ] Replace default tkinter askcolor with CTkColorPicker
+- [x] Replace default tkinter askcolor with CTkColorPicker
 - [x] Replace traditional tkinter messagebox with CTkMessagebox
 
 ## Features

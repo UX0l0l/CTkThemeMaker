@@ -1,12 +1,10 @@
-from tkinter import filedialog
-from customtkinter import *
-from tkinter.colorchooser import askcolor
-from CTkMessagebox import CTkMessagebox
-#from CTkColorPicker import *
 import json
 import os
 import subprocess
-import copy
+from tkinter import filedialog
+from customtkinter import *
+from CTkColorPicker import AskColor
+from CTkMessagebox import CTkMessagebox
 
 """
 Author: Akash Bora (Akascape)
@@ -217,16 +215,15 @@ class App(CTk):
              'DropdownMenu':["fg_color", "hover_color", "text_color"],
              'CTkTable':["colors", "header_color", "hover_color"]}
 
-    widgetlist = [key for key in widgets] 
+    widgetlist = list(widgets.keys())
     current = widgetlist[0]
 
-    for i in json_data:
-        for key, value in json_data.get(i).items():
-            if value=="transparent":
-                json_data[i][key] = ["transparent", "transparent"]
+    for widget_data in json_data.values():
+        for key, value in widget_data.items():
+            if value == "transparent":
+                widget_data[key] = ["transparent", "transparent"]
             
     def __init__(self):
-        
         #--------------------Main root Window--------------------#
         super().__init__(fg_color=ThemeManager.theme["CTkFrame"]["top_fg_color"])
         set_default_color_theme("blue")
@@ -253,16 +250,16 @@ class App(CTk):
         self.right_button.grid(row=0, column=0, sticky="nse", padx=20, pady=20)
 
         self.menu = CTkOptionMenu(master=self, fg_color=("white", "gray38"), button_color=("white", "gray38"), text_color=("black","white"),
-                                         height=30, values=list(self.widgets.items())[0][1], command=self.update)   
+                                         height=30, values=self.widgets[self.current], command=self.update)
         self.menu.grid(row=1, column=0, columnspan=6, sticky="nswe", padx=20)
 
         self.button_light = CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white",
-                                         text_color="grey50", border_width=2, text="Light", hover=False, command=self.change_color_light)
+                                         text_color="grey50", border_width=2, text="Light", hover=False, command=lambda: self.change_color("Light"))
         self.button_light.grid(row=2, column=0, sticky="nswe", columnspan=3, padx=(20,5), pady=20)
     
         self.button_dark = CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white",
                                          text_color="gray80", border_width=2, text="Dark", hover=False,
-                                         command=self.change_color_dark)
+                                         command=lambda: self.change_color("Dark"))
         self.button_dark.grid(row=2, column=3, sticky="nswe", columnspan=3, padx=(5,20), pady=20)
 
         self.button_load = CTkButton(master=self, height=40, width=110, text="Load Theme", command=self.load)
@@ -286,8 +283,8 @@ class App(CTk):
     #--------------------App Functions--------------------#
 
     def change_mode_right(self):
-        # Changing current widget type wih right button
-        self.widgetlist.append(self.widgetlist.pop(0))
+        # Changing current widget type with right button
+        self.widgetlist = self.widgetlist[1:] + [self.widgetlist[0]]
         self.current = self.widgetlist[0]
         self.widget_type.configure(text=self.current)
         self.menu.configure(values=self.widgets[self.current])
@@ -296,7 +293,7 @@ class App(CTk):
          
     def change_mode_left(self):
         """ changing current widget type with left button  """
-        self.widgetlist.insert(0, self.widgetlist.pop())
+        self.widgetlist = [self.widgetlist[-1]] + self.widgetlist[:-1]
         self.current = self.widgetlist[0]
         self.widget_type.configure(text=self.current)
         self.menu.configure(values=self.widgets[self.current])
@@ -305,141 +302,123 @@ class App(CTk):
 
     def update(self, event=None):
         # Updating the widgets and their colors
-        for i in self.json_data[self.current]:
-            if i==self.menu.get():
-                if (self.json_data[self.current][i])[0]!="transparent":
-                    self.button_light.configure(fg_color=(self.json_data[self.current][i])[0])
-                else:
-                    self.button_light.configure(fg_color="transparent")
-                if (self.json_data[self.current][i])[1]!="transparent":    
-                    self.button_dark.configure(fg_color=(self.json_data[self.current][i])[1])
-                else:
-                    self.button_dark.configure(fg_color="transparent")
+        current_data = self.json_data[self.current]
+        selected_item = self.menu.get()
+        
+        if selected_item in current_data:
+            light_color, dark_color = current_data[selected_item]
+            self.button_light.configure(fg_color=light_color if light_color != "transparent" else "transparent")
+            self.button_dark.configure(fg_color=dark_color if dark_color != "transparent" else "transparent")
                     
-    def change_color_light(self):
-        # Choosing the color for Light mode of the theme
-        default = self.button_light._apply_appearance_mode(self.button_light._fg_color)
-        if default=="transparent":
-            default = "white"
-        color1 = askcolor(title=f"Choose color for {self.menu.get()} (Light)", initialcolor=default)
-        if color1[1] is not None:
-            self.button_light.configure(fg_color=color1[1])
-            for i in self.json_data[self.current]:
-                if i==self.menu.get():
-                    (self.json_data[self.current][i])[0] = color1[1]
-               
-    def change_color_dark(self):
-        # Choosing the color for Dark mode of the theme
-        default = self.button_dark._apply_appearance_mode(self.button_dark._fg_color)
-        if default=="transparent":
-            default = "white"      
-        color2 = askcolor(title=f"Choose color for {self.menu.get()} (Dark)", initialcolor=default)
-        if color2[1] is not None:
-            self.button_dark.configure(fg_color=color2[1])
-            for i in self.json_data[self.current]:
-                if i==self.menu.get():
-                    (self.json_data[self.current][i])[1] = color2[1]
+    def change_color(self, mode):
+        # Determine which button and JSON index to use
+        button = self.button_light if mode == "Light" else self.button_dark
+        json_index = 0 if mode == "Light" else 1
+        
+        # Choosing the color for the specified mode of the theme
+        default = button._apply_appearance_mode(button._fg_color)
+        default = "white" if default == "transparent" else default
+        pick_color = AskColor()
+        color = pick_color.get()
+        
+        if color is not None:
+            button.configure(fg_color=color)
+            self.json_data[self.current][self.menu.get()][json_index] = color
       
     def save(self):
         # Exporting the theme file
         save_file = filedialog.asksaveasfilename(initialfile="Untitled.json", defaultextension=".json", filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
+        if not save_file:
+            return
+        
+        export_data = {}
+        for widget, data in self.json_data.items():
+            widget_data = {}
+            for key, value in data.items():
+                widget_data[key] = "transparent" if value == ["transparent", "transparent"] else value
+            export_data[widget] = widget_data
+        
         try:
-            export_data = copy.deepcopy(self.json_data)
-            for i in export_data:
-                for j in export_data[i]:
-                    if export_data[i][j]==["transparent", "transparent"]:
-                        export_data[i][j] = "transparent"
-            if save_file:
-                with open(save_file, "w") as f:
-                    json.dump(export_data, f, indent=2)
-                    f.close()
-                CTkMessagebox("Exported!", "Theme saved successfully!")
-        except Exception as e:
-            CTkMessagebox("Error!", f"Something went wrong! {e}", icon="cancel")
+            with open(save_file, "w") as f:
+                json.dump(export_data, f, indent=2)
+            CTkMessagebox(title="Exported!", message="Theme saved successfully!")
+        except (IOError, json.JSONDecodeError) as e:
+            CTkMessagebox(title="Error!", message=f"Failed to save theme file: {e}", icon="cancel")
                        
     def load(self):
         # Load any theme file
         open_json = filedialog.askopenfilename(filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
+        if not open_json:
+            return
+        
         try:
-            if open_json:
-                with open(open_json) as f:
-                    self.json_data = json.load(f)
-                    
-            for i in self.json_data:
-                for key, value in self.json_data.get(i).items():
-                    if value=="transparent":
-                        self.json_data[i][key] = ["transparent", "transparent"]
-                        
+            with open(open_json) as f:
+                self.json_data = json.load(f)
+            
+            for widget_data in self.json_data.values():
+                widget_data.update((k, ["transparent", "transparent"]) for k, v in widget_data.items() if v == "transparent")
+            
             self.update()
-        except Exception as e:
-            CTkMessagebox("Error!", f"Unable to load this theme file! {e}", icon="cancel")
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            CTkMessagebox(title="Error!", message=f"Unable to load this theme file! {e}", icon="cancel")
         
     def reset(self):
         # Resetting the current colors of the widget to null (default value)
-        for i in self.json_data[self.current]:
-            if i==self.menu.get():
-                self.json_data[self.current][i][0] = "transparent"
-                self.button_light.configure(fg_color="transparent")
-                self.json_data[self.current][i][1] = "transparent"
-                self.button_dark.configure(fg_color="transparent")
+        current_data = self.json_data[self.current]
+        selected_item = self.menu.get()
+        
+        if selected_item in current_data:
+            current_data[selected_item] = ["transparent", "transparent"]
+            self.button_light.configure(fg_color="transparent")
+            self.button_dark.configure(fg_color="transparent")
 
     def test(self):
         # Function for quickly testing the theme
         DIRPATH = os.path.dirname(os.path.abspath(__file__))
-        
         program = os.path.join(DIRPATH, "CTkExample.py")
         
         if not os.path.exists(program):
-            CTkMessagebox("Sorry!","Cannot test the theme, example program is missing!", icon="cancel")
+            CTkMessagebox(title="Sorry!", message="Cannot test the theme, example program is missing!", icon="cancel")
             return
 
-        export_data = copy.deepcopy(self.json_data)
-        for i in export_data:
-            for j in export_data[i]:
-                if export_data[i][j] == ["transparent", "transparent"]:
-                    export_data[i][j] = "transparent"
+        export_data = {widget: {key: "transparent" if value == ["transparent", "transparent"] else value 
+                                for key, value in data.items()} 
+                       for widget, data in self.json_data.items()}
 
-        with open(os.path.join(DIRPATH, "CTkTheme_test.json"), "w") as f:
-            json.dump(export_data, f, indent=2)
-        subprocess.run(["python" if os.name == "nt" else "python3", program])
+        test_theme_path = os.path.join(DIRPATH, "CTkTheme_test.json")
+        with open(test_theme_path, "w") as f:
+            json.dump(export_data, f)
+        
+        try:
+            subprocess.run(["python" if os.name == "nt" else "python3", program], check=True)
+        except subprocess.CalledProcessError as e:
+            CTkMessagebox(title="Error!", message=f"Failed to run the test program: {e}", icon="cancel")
+        finally:
+            os.remove(test_theme_path)
             
     def replace_color(self, color, button, mode):
         # Replace a specific color
-        if color=="transparent":
-            default = "white"
-        else:
-            default = color
-        new_color = askcolor(title=f"Replace this color: {color}", initialcolor=default)[1]
-        if new_color is None:
-            new_color = "transparent"
-        if mode:
-             for i in self.json_data:
-                for j in self.json_data[i]:
-                    if type(self.json_data[i][j]) is list:
-                        if self.json_data[i][j][1]==color:
-                            self.json_data[i][j][1] = new_color
-                    
-        else:
-            for i in self.json_data:
-                for j in self.json_data[i]:
-                    if type(self.json_data[i][j]) is list:
-                        if self.json_data[i][j][0]==color:
-                            self.json_data[i][j][0] = new_color
-        try:
-            button.configure(text=new_color, fg_color=new_color)
-        except Exception as e:
-            print(e)
+        default = "white" if color == "transparent" else color
+        pick_color = AskColor()  # open the color picker
+        new_color = pick_color.get()  # get the new color string
+        new_color = "transparent" if new_color is None else new_color
+        
+        index = 1 if mode else 0
+        for widget_data in self.json_data.values():
+            for value in widget_data.values():
+                if isinstance(value, list) and value[index] == color:
+                    value[index] = new_color
+        
+        button.configure(text=new_color, fg_color=new_color)
         self.update()
             
     def show_colors(self):
         # Show the color palette for the theme
-        toplevel = CTkToplevel()
-        toplevel.resizable(True, True)
-        toplevel.geometry("500x700")
+        toplevel = CTkToplevel(self)
         toplevel.title("Color Palette")
+        toplevel.geometry("500x700")
+        toplevel.resizable(True, True)
         toplevel.transient(self)
-        toplevel.update()
-        toplevel.deiconify()
         toplevel.grab_set()
         
         frame_light = CTkScrollableFrame(toplevel, label_text="Light Colors")
@@ -448,23 +427,16 @@ class App(CTk):
         frame_dark = CTkScrollableFrame(toplevel, label_text="Dark Colors")
         frame_dark.pack(fill="both", expand=True, side="right", padx=(5,10), pady=10)
 
-        set_dark = set()
-        set_light = set()
+        colors = set()
+        for data in self.json_data.values():
+            for value in data.values():
+                if isinstance(value, list):
+                    colors.update(value)
         
-        for i in self.json_data:
-            for j in self.json_data[i]:
-                if type(self.json_data[i][j]) is list:
-                    set_dark.add(self.json_data[i][j][1])
-                    set_light.add(self.json_data[i][j][0])
-                    
-        for color in set_dark:
-            button = CTkButton(frame_dark, text=color, fg_color=color, hover=False)
-            button.configure(command=lambda x=color, y=button: self.replace_color(x, y, 1))
-            button.pack(fill="x", expand=True, padx=10, pady=5)
-            
-        for color in set_light:
-            button = CTkButton(frame_light, text=color, fg_color=color, hover=False)
-            button.configure(command=lambda x=color, y=button: self.replace_color(x, y, 0))         
+        for color in colors:
+            button = CTkButton(frame_dark if color in (value[1] for data in self.json_data.values() for value in data.values() if isinstance(value, list)) else frame_light,
+                               text=color, fg_color=color, hover=False,
+                               command=lambda c=color, b=button: self.replace_color(c, b, 1 if color in (value[1] for data in self.json_data.values() for value in data.values() if isinstance(value, list)) else 0))
             button.pack(fill="x", expand=True, padx=10, pady=5)
              
     def on_closing(self):
