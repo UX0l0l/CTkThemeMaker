@@ -4,6 +4,7 @@ import subprocess
 from tkinter import filedialog
 from customtkinter import *
 from CTkColorPicker import AskColor
+from CTkExample import CTkExample
 from CTkMessagebox import CTkMessagebox
 
 """
@@ -21,9 +22,14 @@ Default reset color is "transparent" which has no color, means it take the color
 (transparent is not supported in all widgets)
 """
 
+
+
 class App(CTk):
-    
+
     #--------------------Main Structure of the Theme File--------------------#
+
+    color1 = "gray90"
+    color2 = "gray20"
     
     json_data = {
                   "CTk": {
@@ -163,7 +169,7 @@ class App(CTk):
                     "text_color": ["gray10", "gray90"]
                   },
                   "CTkTable": {
-                    "colors": ["gray90", "gray20"],
+                    "colors": [[color1], [color2]],
                     "header_color": ["gray10", "gray90"],
                     "hover_color": ["gray75", "gray28"]
                   },
@@ -185,7 +191,6 @@ class App(CTk):
                     }
                   }
                 }
-
 
     #--------------------Widget Type and Content--------------------#
     
@@ -213,7 +218,7 @@ class App(CTk):
                                    "unselected_hover_color", "text_color", "text_color_disabled"],
              'CTkScrollableFrame':["label_fg_color"],
              'DropdownMenu':["fg_color", "hover_color", "text_color"],
-             'CTkTable':["colors", "header_color", "hover_color"]}
+             'CTkTable':["color1", "color2", "header_color", "hover_color"]}
 
     widgetlist = list(widgets.keys())
     current = widgetlist[0]
@@ -226,6 +231,7 @@ class App(CTk):
     def __init__(self):
         #--------------------Main root Window--------------------#
         super().__init__(fg_color=ThemeManager.theme["CTkFrame"]["top_fg_color"])
+        set_appearance_mode("System")
         set_default_color_theme("blue")
         self.title("CustomTkinter ThemeMaker")
         self.geometry("500x450")
@@ -241,12 +247,10 @@ class App(CTk):
                                         fg_color=("white", "gray38"))
         self.widget_type.grid(row=0, column=0, sticky="nswe", padx=80, pady=20)
 
-        self.left_button = CTkButton(master=self.frame_info, text="<", width=20, height=20, corner_radius=10,
-                                        fg_color=("white", "gray38"), command=self.change_mode_left, text_color=("black","white"))
+        self.left_button = CTkButton(master=self.frame_info, text="<", width=20, height=20, corner_radius=10, fg_color=("white", "gray38"), command=lambda: self.change_mode("left"), text_color=("black","white"))
         self.left_button.grid(row=0, column=0, sticky="nsw", padx=20, pady=20)
 
-        self.right_button = CTkButton(master=self.frame_info, text=">", width=20, height=20, corner_radius=10,
-                                        fg_color=("white", "gray38"), command=self.change_mode_right, text_color=("black","white"))
+        self.right_button = CTkButton(master=self.frame_info, text=">", width=20, height=20, corner_radius=10, fg_color=("white", "gray38"), command=lambda: self.change_mode("right"), text_color=("black","white"))
         self.right_button.grid(row=0, column=0, sticky="nse", padx=20, pady=20)
 
         self.menu = CTkOptionMenu(master=self, fg_color=("white", "gray38"), button_color=("white", "gray38"), text_color=("black","white"),
@@ -257,9 +261,7 @@ class App(CTk):
                                          text_color="grey50", border_width=2, text="Light", hover=False, command=lambda: self.change_color("Light"))
         self.button_light.grid(row=2, column=0, sticky="nswe", columnspan=3, padx=(20,5), pady=20)
     
-        self.button_dark = CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white",
-                                         text_color="gray80", border_width=2, text="Dark", hover=False,
-                                         command=lambda: self.change_color("Dark"))
+        self.button_dark = CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white", text_color="gray80", border_width=2, text="Dark", hover=False, command=lambda: self.change_color("Dark"))
         self.button_dark.grid(row=2, column=3, sticky="nswe", columnspan=3, padx=(5,20), pady=20)
 
         self.button_load = CTkButton(master=self, height=40, width=110, text="Load Theme", command=self.load)
@@ -282,25 +284,17 @@ class App(CTk):
 
     #--------------------App Functions--------------------#
 
-    def change_mode_right(self):
-        # Changing current widget type with right button
-        self.widgetlist = self.widgetlist[1:] + [self.widgetlist[0]]
-        self.current = self.widgetlist[0]
-        self.widget_type.configure(text=self.current)
-        self.menu.configure(values=self.widgets[self.current])
-        self.menu.set(self.widgets[self.current][0])
-        self.update()
-         
-    def change_mode_left(self):
-        """ changing current widget type with left button  """
-        self.widgetlist = [self.widgetlist[-1]] + self.widgetlist[:-1]
+    def change_mode(self, direction):
+        # Changing current widget type based on direction
+        self.widgetlist = self.widgetlist[1:] + [self.widgetlist[0]] if direction == "right" else [self.widgetlist[-1]] + self.widgetlist[:-1]
+
         self.current = self.widgetlist[0]
         self.widget_type.configure(text=self.current)
         self.menu.configure(values=self.widgets[self.current])
         self.menu.set(self.widgets[self.current][0])
         self.update()
 
-    def update(self, event=None):
+    def update(self, *args):
         # Updating the widgets and their colors
         current_data = self.json_data[self.current]
         selected_item = self.menu.get()
@@ -321,10 +315,14 @@ class App(CTk):
         pick_color = AskColor()
         color = pick_color.get()
         
-        if color is not None:
-            button.configure(fg_color=color)
-            self.json_data[self.current][self.menu.get()][json_index] = color
-      
+        if color:
+            if self.current != "CTkTable":
+                button.configure(fg_color=color)
+                self.json_data[self.current][self.menu.get()][json_index] = color
+            else:
+                button.configure(fg_color=color)
+                self.json_data[self.current]["colors"][1][json_index] = color
+
     def save(self):
         # Exporting the theme file
         save_file = filedialog.asksaveasfilename(initialfile="Untitled.json", defaultextension=".json", filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
@@ -359,9 +357,10 @@ class App(CTk):
                 widget_data.update((k, ["transparent", "transparent"]) for k, v in widget_data.items() if v == "transparent")
             
             self.update()
+
         except (FileNotFoundError, json.JSONDecodeError) as e:
             CTkMessagebox(title="Error!", message=f"Unable to load this theme file! {e}", icon="cancel")
-        
+
     def reset(self):
         # Resetting the current colors of the widget to null (default value)
         current_data = self.json_data[self.current]
@@ -374,25 +373,17 @@ class App(CTk):
 
     def test(self):
         # Function for quickly testing the theme
-        DIRPATH = os.path.dirname(os.path.abspath(__file__))
-        program = os.path.join(DIRPATH, "CTkExample.py")
+        export_data = {widget: {key: "transparent" if value == ["transparent", "transparent"] else value for key, value in data.items()} for widget, data in self.json_data.items()}
         
-        if not os.path.exists(program):
-            CTkMessagebox(title="Sorry!", message="Cannot test the theme, example program is missing!", icon="cancel")
-            return
-
-        export_data = {widget: {key: "transparent" if value == ["transparent", "transparent"] else value 
-                                for key, value in data.items()} 
-                       for widget, data in self.json_data.items()}
-
+        DIRPATH = os.path.dirname(os.path.abspath(__file__))
         test_theme_path = os.path.join(DIRPATH, "CTkTheme_test.json")
         with open(test_theme_path, "w") as f:
             json.dump(export_data, f)
         
         try:
-            subprocess.run(["python" if os.name == "nt" else "python3", program], check=True)
-        except subprocess.CalledProcessError as e:
-            CTkMessagebox(title="Error!", message=f"Failed to run the test program: {e}", icon="cancel")
+            CTkExample()
+        except Exception as e:
+            CTkMessagebox(title="Error!", message=e, icon="cancel")
         finally:
             os.remove(test_theme_path)
             
@@ -434,9 +425,7 @@ class App(CTk):
                     colors.update(value)
         
         for color in colors:
-            button = CTkButton(frame_dark if color in (value[1] for data in self.json_data.values() for value in data.values() if isinstance(value, list)) else frame_light,
-                               text=color, fg_color=color, hover=False,
-                               command=lambda c=color, b=button: self.replace_color(c, b, 1 if color in (value[1] for data in self.json_data.values() for value in data.values() if isinstance(value, list)) else 0))
+            button = CTkButton(frame_dark if color in (value[1] for data in self.json_data.values() for value in data.values() if isinstance(value, list)) else frame_light, text=color, fg_color=color, hover=False, command=lambda c=color, b=button: self.replace_color(c, b, 1 if color in (value[1] for data in self.json_data.values() for value in data.values() if isinstance(value, list)) else 0))
             button.pack(fill="x", expand=True, padx=10, pady=5)
              
     def on_closing(self):
@@ -444,7 +433,7 @@ class App(CTk):
         quit = CTkMessagebox(title="Exit?", message= "Do you want to exit?", icon="question", option_1="No", option_2="Yes")
         if quit.get() == "Yes":
             self.destroy()
-            
+
 if __name__ == "__main__":
     app = App()
     app.mainloop()

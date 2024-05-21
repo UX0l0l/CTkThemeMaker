@@ -3,3 +3,4 @@ customtkinter
 pillow
 CTkMessagebox
 CTkColorPicker
+CTkTable

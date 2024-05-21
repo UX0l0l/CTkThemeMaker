@@ -1,23 +1,19 @@
 from tkinter import *
 from customtkinter import *
-from PIL import Image
+from CTkTable import *
 import os
 
-set_appearance_mode("System")
-
-DIRPATH = os.path.dirname(os.path.abspath(__file__))
-
-themepath = os.path.join(DIRPATH, "CTkTheme_test.json")
-    
-set_default_color_theme(themepath if os.path.exists(themepath) else "blue")
-
-class App(CTk):
+class CTkExample(CTkToplevel):
     def __init__(self):
         super().__init__()
+        DIRPATH = os.path.dirname(os.path.abspath(__file__))
+        themepath = os.path.join(DIRPATH, "CTkTheme_test.json")
+        set_default_color_theme(themepath if os.path.exists(themepath) else "blue")
 
         # configure window
         self.title("CustomTkinter Example")
-        self.geometry(f"{1000}x{580}")
+        self.geometry("1000x580")
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.bind("<1>", lambda event: event.widget.focus_set())
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
@@ -29,24 +25,20 @@ class App(CTk):
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
         self.logo_label = CTkLabel(self.sidebar_frame, text="CustomTkinter", font=CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.sidebar_button_1 = CTkButton(self.sidebar_frame, command=lambda: print("Button Clicked"))
+        self.sidebar_button_1 = CTkButton(self.sidebar_frame)
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
-        self.sidebar_button_2 = CTkButton(self.sidebar_frame, command=lambda: print("Button Clicked"))
+        self.sidebar_button_2 = CTkButton(self.sidebar_frame)
         self.sidebar_button_2.grid(row=3, column=0, padx=20, pady=10)
+
+        CTkTable(self.sidebar_frame, width=50, row=3, column=3, values=[[1, 2, 3], [4, 5, 6], [7, 8, 9]]).grid(row=4, column=0)
         
-        self.image = CTkImage(Image.open(os.path.join(os.path.dirname(__file__), "assets","icons",
-                                                                    "CustomTkinter_icon_Windows.ico")), size=(100,100))
-        self.Image_label = CTkLabel(self.sidebar_frame, text="", image=self.image)
-        self.Image_label.grid(row=4, column=0, padx=20, pady=10) 
         self.appearance_mode_label = CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
-        self.appearance_mode_optionemenu = CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],
-                                                                       command=self.change_appearance_mode_event)
+        self.appearance_mode_optionemenu = CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"], command=set_appearance_mode)
         self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
         self.scaling_label = CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
         self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
-        self.scaling_optionemenu = CTkOptionMenu(self.sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"],
-                                                               command=self.change_scaling_event)
+        self.scaling_optionemenu = CTkOptionMenu(self.sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"], command=lambda new_scaling: set_widget_scaling(int(new_scaling.replace("%", "")) / 100))
         self.scaling_optionemenu.grid(row=8, column=0, padx=20, pady=(10, 20))
 
         # create main entry and button
@@ -68,14 +60,11 @@ class App(CTk):
         self.tabview.tab("CTkTabview").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
         self.tabview.tab("Frame").grid_columnconfigure(0, weight=1)
 
-        self.optionmenu_1 = CTkOptionMenu(self.tabview.tab("CTkTabview"), dynamic_resizing=False,
-                                                        values=["Value 1", "Value 2"])
+        self.optionmenu_1 = CTkOptionMenu(self.tabview.tab("CTkTabview"), dynamic_resizing=False, values=["Value 1", "Value 2"])
         self.optionmenu_1.grid(row=0, column=0, padx=20, pady=(20, 10))
-        self.combobox_1 = CTkComboBox(self.tabview.tab("CTkTabview"),
-                                                    values=["Value 1", "Value 2"])
+        self.combobox_1 = CTkComboBox(self.tabview.tab("CTkTabview"), values=["Value 1", "Value 2"])
         self.combobox_1.grid(row=1, column=0, padx=20, pady=(10, 10))
-        self.string_input_button = CTkButton(self.tabview.tab("CTkTabview"), text="Open CTkInputDialog",
-                                                           command=self.open_input_dialog_event)
+        self.string_input_button = CTkButton(self.tabview.tab("CTkTabview"), text="Open CTkInputDialog", command=lambda: CTkInputDialog(text="Type in a number:", title="CTkInputDialog"))
         self.string_input_button.grid(row=2, column=0, padx=20, pady=(10, 10))
         self.label_tab_2 = CTkFrame(self.tabview.tab("Frame"), height=150)
         self.label_tab_2.grid(row=0, column=0, padx=(5,0), pady=20)
@@ -105,7 +94,7 @@ class App(CTk):
         self.checkbox_1.grid(row=1, column=0, pady=(20, 10), padx=20, sticky="n")
         self.checkbox_2 = CTkCheckBox(master=self.checkbox_slider_frame)
         self.checkbox_2.grid(row=2, column=0, pady=10, padx=20, sticky="n")
-        self.switch_1 = CTkSwitch(master=self.checkbox_slider_frame, command=lambda: print("switch 1 toggle"))
+        self.switch_1 = CTkSwitch(master=self.checkbox_slider_frame)
         self.switch_1.grid(row=3, column=0, pady=10, padx=20, sticky="n")
         self.switch_2 = CTkSwitch(master=self.checkbox_slider_frame)
         self.switch_2.grid(row=4, column=0, pady=(10, 20), padx=20, sticky="n")
@@ -154,23 +143,13 @@ class App(CTk):
         self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
         self.seg_button_1.set("Value 2")
 
-    def open_input_dialog_event(self):
-        dialog = CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
-        print("CTkInputDialog: ", dialog.get_input())
-
     def new_window(self):
         top_level = CTkToplevel()
         CTkLabel(top_level, text="A TopLevel Window").grid(padx=100, pady=100)
         top_level.attributes("-topmost", 1)
         self.after(100, lambda: top_level.attributes("-topmost", 0))
-        
-    def change_appearance_mode_event(self, new_appearance_mode: str):
-        set_appearance_mode(new_appearance_mode)
 
-    def change_scaling_event(self, new_scaling: str):
-        new_scaling_float = int(new_scaling.replace("%", "")) / 100
-        set_widget_scaling(new_scaling_float)  
-            
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+    def on_closing(self):
+        set_appearance_mode("System")
+        set_widget_scaling(1)
+        self.destroy()
