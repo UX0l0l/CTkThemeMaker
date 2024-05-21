@@ -34,7 +34,7 @@ class CTkExample(CTkToplevel):
         
         self.appearance_mode_label = CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))
-        self.appearance_mode_optionemenu = CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"], command=set_appearance_mode)
+        self.appearance_mode_optionemenu = CTkOptionMenu(self.sidebar_frame, values=["System", "Light", "Dark"], command=set_appearance_mode)
         self.appearance_mode_optionemenu.grid(row=6, column=0, padx=20, pady=(10, 10))
         self.scaling_label = CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
         self.scaling_label.grid(row=7, column=0, padx=20, pady=(10, 0))
@@ -131,7 +131,7 @@ class CTkExample(CTkToplevel):
         self.checkbox_1.select()
         self.switch_1.select()
         self.radio_button_3.configure(state="disabled")
-        self.appearance_mode_optionemenu.set("Dark")
+        self.appearance_mode_optionemenu.set("System")
         self.scaling_optionemenu.set("100%")
         self.optionmenu_1.set("CTkOptionmenu")
         self.combobox_1.set("CTkComboBox")

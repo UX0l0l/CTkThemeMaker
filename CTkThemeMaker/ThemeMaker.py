@@ -21,8 +21,6 @@ Default reset color is "transparent" which has no color, means it take the color
 (transparent is not supported in all widgets)
 """
 
-
-
 class App(CTk):
 
     #--------------------Main Structure of the Theme File--------------------#
