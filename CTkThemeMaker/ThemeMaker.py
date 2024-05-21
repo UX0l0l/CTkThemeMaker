@@ -1,6 +1,5 @@
 import json
 import os
-import subprocess
 from tkinter import filedialog
 from customtkinter import *
 from CTkColorPicker import AskColor
