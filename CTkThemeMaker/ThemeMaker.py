@@ -24,9 +24,6 @@ Default reset color is "transparent" which has no color, means it take the color
 class App(CTk):
 
     #--------------------Main Structure of the Theme File--------------------#
-
-    color1 = "gray90"
-    color2 = "gray20"
     
     json_data = {
                   "CTk": {
@@ -166,7 +163,7 @@ class App(CTk):
                     "text_color": ["gray10", "gray90"]
                   },
                   "CTkTable": {
-                    "colors": [[color1], [color2]],
+                    "colors": ["gray90", "gray20"],
                     "header_color": ["gray10", "gray90"],
                     "hover_color": ["gray75", "gray28"]
                   },
@@ -240,8 +237,7 @@ class App(CTk):
         self.frame_info.grid(row=0, column=0, columnspan=6, sticky="nswe", padx=20, pady=20)
         self.frame_info.grid_columnconfigure(0, weight=1)
 
-        self.widget_type = CTkLabel(master=self.frame_info, text=self.current, corner_radius=10, width=200, height=20,
-                                        fg_color=("white", "gray38"))
+        self.widget_type = CTkLabel(master=self.frame_info, text=self.current, corner_radius=10, width=200, height=20, fg_color=("white", "gray38"))
         self.widget_type.grid(row=0, column=0, sticky="nswe", padx=80, pady=20)
 
         self.left_button = CTkButton(master=self.frame_info, text="<", width=20, height=20, corner_radius=10, fg_color=("white", "gray38"), command=lambda: self.change_mode("left"), text_color=("black","white"))
@@ -250,12 +246,10 @@ class App(CTk):
         self.right_button = CTkButton(master=self.frame_info, text=">", width=20, height=20, corner_radius=10, fg_color=("white", "gray38"), command=lambda: self.change_mode("right"), text_color=("black","white"))
         self.right_button.grid(row=0, column=0, sticky="nse", padx=20, pady=20)
 
-        self.menu = CTkOptionMenu(master=self, fg_color=("white", "gray38"), button_color=("white", "gray38"), text_color=("black","white"),
-                                         height=30, values=self.widgets[self.current], command=self.update)
+        self.menu = CTkOptionMenu(master=self, fg_color=("white", "gray38"), button_color=("white", "gray38"), text_color=("black","white"), height=30, values=self.widgets[self.current], command=self.update)
         self.menu.grid(row=1, column=0, columnspan=6, sticky="nswe", padx=20)
 
-        self.button_light = CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white",
-                                         text_color="grey50", border_width=2, text="Light", hover=False, command=lambda: self.change_color("Light"))
+        self.button_light = CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white", text_color="grey50", border_width=2, text="Light", hover=False, command=lambda: self.change_color("Light"))
         self.button_light.grid(row=2, column=0, sticky="nswe", columnspan=3, padx=(20,5), pady=20)
     
         self.button_dark = CTkButton(master=self, height=100, width=200, corner_radius=10, border_color="white", text_color="gray80", border_width=2, text="Dark", hover=False, command=lambda: self.change_color("Dark"))
@@ -276,7 +270,6 @@ class App(CTk):
         self.quick_test = CTkButton(master=self, height=40, width=110, text="Quick Test", command=self.test)
         self.quick_test.grid(row=4, column=3, columnspan=3, sticky="nswe", padx=(5,20), pady=(0,20))
 
-        
         self.update()
 
     #--------------------App Functions--------------------#
@@ -313,12 +306,9 @@ class App(CTk):
         color = pick_color.get()
         
         if color:
+            button.configure(fg_color=color)
             if self.current != "CTkTable":
-                button.configure(fg_color=color)
                 self.json_data[self.current][self.menu.get()][json_index] = color
-            else:
-                button.configure(fg_color=color)
-                self.json_data[self.current]["colors"][1][json_index] = color
 
     def save(self):
         # Exporting the theme file
@@ -407,24 +397,32 @@ class App(CTk):
         toplevel.geometry("500x700")
         toplevel.resizable(True, True)
         toplevel.transient(self)
+        self.update_idletasks()
         toplevel.grab_set()
-        
+
         frame_light = CTkScrollableFrame(toplevel, label_text="Light Colors")
-        frame_light.pack(fill="both", expand=True, side="left", padx=(10,5), pady=10)
-        
+        frame_light.pack(fill="both", expand=True, side="left", padx=(10, 5), pady=10)
+
         frame_dark = CTkScrollableFrame(toplevel, label_text="Dark Colors")
-        frame_dark.pack(fill="both", expand=True, side="right", padx=(5,10), pady=10)
+        frame_dark.pack(fill="both", expand=True, side="right", padx=(5, 10), pady=10)
 
         colors = set()
         for data in self.json_data.values():
             for value in data.values():
                 if isinstance(value, list):
-                    colors.update(value)
-        
+                    if self.current == "CTkTable" and isinstance(value[0], list):
+                        for sublist in value:
+                            colors.update(sublist)
+                    else:
+                        colors.update(value)
+
         for color in colors:
-            button = CTkButton(frame_dark if color in (value[1] for data in self.json_data.values() for value in data.values() if isinstance(value, list)) else frame_light, text=color, fg_color=color, hover=False, command=lambda c=color, b=button: self.replace_color(c, b, 1 if color in (value[1] for data in self.json_data.values() for value in data.values() if isinstance(value, list)) else 0))
+            is_dark_color = any(color == value[1] if isinstance(value[0], str) else color in value[1] for data in self.json_data.values() for value in data.values() if isinstance(value, list))
+            frame = frame_dark if is_dark_color else frame_light
+            button = CTkButton(frame, text=color, fg_color=color, hover=False)
+            button.configure(command=lambda c=color, b=button, m=is_dark_color: self.replace_color(c, b, 1 if m else 0))
             button.pack(fill="x", expand=True, padx=10, pady=5)
-             
+     
     def on_closing(self):
         # Close the program
         quit = CTkMessagebox(title="Exit?", message= "Do you want to exit?", icon="question", option_1="No", option_2="Yes")
