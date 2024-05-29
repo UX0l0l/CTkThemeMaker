@@ -2,7 +2,7 @@ import json
 import os
 from tkinter import filedialog
 from customtkinter import *
-from CTkColorPicker import AskColor
+from ctk_color_picker import AskColor
 from CTkExample import CTkExample
 from CTkMessagebox import CTkMessagebox
 
@@ -162,11 +162,6 @@ class App(CTk):
                     "hover_color": ["gray75", "gray28"],
                     "text_color": ["gray10", "gray90"]
                   },
-                  "CTkTable": {
-                    "colors": ["gray90", "gray20"],
-                    "header_color": ["gray10", "gray90"],
-                    "hover_color": ["gray75", "gray28"]
-                  },
                   "CTkFont": {
                     "macOS": {
                       "family": "SF Display",
@@ -211,8 +206,7 @@ class App(CTk):
              'CTkSegmentedButton':["fg_color", "selected_color", "selected_hover_color", "unselected_color",
                                    "unselected_hover_color", "text_color", "text_color_disabled"],
              'CTkScrollableFrame':["label_fg_color"],
-             'DropdownMenu':["fg_color", "hover_color", "text_color"],
-             'CTkTable':["color1", "color2", "header_color", "hover_color"]}
+             'DropdownMenu':["fg_color", "hover_color", "text_color"]}
 
     widgetlist = list(widgets.keys())
     current = widgetlist[0]
@@ -307,8 +301,7 @@ class App(CTk):
         
         if color:
             button.configure(fg_color=color)
-            if self.current != "CTkTable":
-                self.json_data[self.current][self.menu.get()][json_index] = color
+            self.json_data[self.current][self.menu.get()][json_index] = color
 
     def save(self):
         # Exporting the theme file
@@ -410,11 +403,7 @@ class App(CTk):
         for data in self.json_data.values():
             for value in data.values():
                 if isinstance(value, list):
-                    if self.current == "CTkTable" and isinstance(value[0], list):
-                        for sublist in value:
-                            colors.update(sublist)
-                    else:
-                        colors.update(value)
+                    colors.update(value)
 
         for color in colors:
             is_dark_color = any(color == value[1] if isinstance(value[0], str) else color in value[1] for data in self.json_data.values() for value in data.values() if isinstance(value, list))

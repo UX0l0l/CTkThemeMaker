@@ -3,11 +3,14 @@ A quick and easy theme builder for customtkinter!
 
 ## To-do list
 
-- [ ] Add support for CTkTable
+- [ ] ~~Add support for CTkTable~~
+- [ ] ~~Add support for other widgets (not sure which ones yet)~~
 - [x] Fix color palette button
-- [ ] Add support for other widgets (not sure which ones yet)
 - [x] Replace default tkinter askcolor with CTkColorPicker
+    - [x] Use forked [CTkColorPicker](https://github.com/UX0l0l/CTkColorPicker) with added RGB and Hex color inputs (until the pull request is merged into the main origin branch)
 - [x] Replace traditional tkinter messagebox with CTkMessagebox
+
+Note: Support for custom widgets was hard to implement due to changes not being detected from the JSON file, only the default CTk widgets are supported for now (and some custom widgets such as CTkMessageBox or CTkMenuBar which take on attributes of buttons and other default CTk widgets)
 
 ## Features
 - Create custom themes
@@ -19,7 +22,8 @@ A quick and easy theme builder for customtkinter!
 - No extra package installation required, just run the program and make your theme 😤
 
 ## Download
-### [<img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/Akascape/CTkThemeMaker?&color=green&label=Download%20CTkThemeMaker&logo=Python&logoColor=yellow&style=for-the-badge"  width="400">](https://github.com/Akascape/CTkThemeMaker/archive/refs/heads/main.zip)
+
+Simply clone the repository using `git clone https://github.com/UX0l0l/CTkThemeMaker`, or download the zip folder by clicking "Code > Download ZIP" on the top right corner.
 
 **Compatible ctk version: 5.2.0+**
 
