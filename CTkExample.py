@@ -1,6 +1,5 @@
 from tkinter import *
 from customtkinter import *
-from CTkTable import *
 import os
 
 class CTkExample(CTkToplevel):
@@ -29,8 +28,6 @@ class CTkExample(CTkToplevel):
         self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
         self.sidebar_button_2 = CTkButton(self.sidebar_frame)
         self.sidebar_button_2.grid(row=3, column=0, padx=20, pady=10)
-
-        CTkTable(self.sidebar_frame, width=50, row=3, column=3, values=[[1, 2, 3], [4, 5, 6], [7, 8, 9]]).grid(row=4, column=0)
         
         self.appearance_mode_label = CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
         self.appearance_mode_label.grid(row=5, column=0, padx=20, pady=(10, 0))

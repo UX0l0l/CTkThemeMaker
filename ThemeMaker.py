@@ -391,7 +391,6 @@ class App(CTk):
         toplevel.resizable(True, True)
         toplevel.transient(self)
         self.update_idletasks()
-        toplevel.grab_set()
 
         frame_light = CTkScrollableFrame(toplevel, label_text="Light Colors")
         frame_light.pack(fill="both", expand=True, side="left", padx=(10, 5), pady=10)

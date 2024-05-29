@@ -24,9 +24,7 @@ class AskColor(CTkToplevel):
                  corner_radius: int = 24,
                  slider_border: int = 1,
                  **button_kwargs):
-    
         super().__init__()
-        
         self.title(title)
         WIDTH = width if width >= 200 else 200
         HEIGHT = WIDTH + 250
@@ -96,8 +94,6 @@ class AskColor(CTkToplevel):
         self.button.pack(fill="both", padx=10, pady=20)
                 
         self.after(150, lambda: self.label.focus())
-                
-        self.grab_set()
         
         self.updating = False  # Flag to prevent recursive updates
         
