@@ -304,7 +304,6 @@ class App(CTk):
             self.json_data[self.current][self.menu.get()][json_index] = color
 
     def save(self):
-        # Exporting the theme file
         save_file = filedialog.asksaveasfilename(initialfile="Untitled.json", defaultextension=".json", filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
         if not save_file:
             return
@@ -324,7 +323,6 @@ class App(CTk):
             CTkMessagebox(title="Error!", message=f"Failed to save theme file: {e}", icon="cancel")
                        
     def load(self):
-        # Load any theme file
         open_json = filedialog.askopenfilename(filetypes=[('JSON', ['*.json']),('All Files', '*.*')])
         if not open_json:
             return
@@ -352,7 +350,6 @@ class App(CTk):
             self.button_dark.configure(fg_color="transparent")
 
     def test(self):
-        # Function for quickly testing the theme
         export_data = {widget: {key: "transparent" if value == ["transparent", "transparent"] else value for key, value in data.items()} for widget, data in self.json_data.items()}
         
         DIRPATH = os.path.dirname(os.path.abspath(__file__))
@@ -370,8 +367,8 @@ class App(CTk):
     def replace_color(self, color, button, mode):
         # Replace a specific color
         default = "white" if color == "transparent" else color
-        pick_color = AskColor()  # open the color picker
-        new_color = pick_color.get()  # get the new color string
+        pick_color = AskColor()
+        new_color = pick_color.get()
         new_color = "transparent" if new_color is None else new_color
         
         index = 1 if mode else 0
@@ -412,7 +409,6 @@ class App(CTk):
             button.pack(fill="x", expand=True, padx=10, pady=5)
      
     def on_closing(self):
-        # Close the program
         quit = CTkMessagebox(title="Exit?", message= "Do you want to exit?", icon="question", option_1="No", option_2="Yes")
         if quit.get() == "Yes":
             self.destroy()
